@@ -31,3 +31,13 @@ validarTablero t
 cantidadCasillas :: Int -> String
 cantidadCasillas 1 = "1 casilla"
 cantidadCasillas n = show n ++ " casillas"
+
+calcularMeta :: Tablero -> Int
+calcularMeta t = length t - 1 - cerosFinales t
+
+cerosFinales :: Tablero -> Int
+cerosFinales = length . takeWhile (== 0) . reverse
+
+vacioAplicado :: Tablero -> Int -> Bool
+vacioAplicado t meta = meta /= length t - 1
+
