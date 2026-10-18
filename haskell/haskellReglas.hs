@@ -115,16 +115,4 @@ puntuarCamino tablero camino = Puntaje
     bruto  = calcularBruto tablero camino
     zafiro = calcularZafiro tablero camino
     eter   = calcularEter bruto
-    
-------------------------------------
--- PRUEBAS (cada linea dice cual es el resultado esperado)
-------------------------------------
-main :: IO ()
-main = do
-  print (calcularBruto   [2,-1,-3,5,0] [0,1,3])      -- esperado 6
-  print (calcularZafiro  [2,-1,-3,5,0] [0,1,2,3])    -- esperado 5  (-1 y -3 seguidos)
-  print (calcularZafiro  [2,-1,-3,5,0] [0,1,3])      -- esperado 0
-  print (calcularZafiro  [-1,-1,-1]    [0,1,2])      -- esperado 10 (dos parejas)
-  print (calcularZafiro  [1,-1,0,-3]   [0,1,3])      -- esperado 5  (salto: igual se comparan)
-  print (calcularZafiro  [-1,0,-1]     [0,1,2])      -- esperado 0  (el cero no es negativo)
-  print (calcularZafiro  [-2,-3,1]     [0,1,2])      -- esperado 5  (casilla inicial negativa)
+
