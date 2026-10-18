@@ -327,3 +327,42 @@ function validarEstructura(datos)::Union{Resultado,ErrorLectura}
         valores["caminos_evaluados"],
     )
 end
+
+#Lectura del archivo
+
+mensajeDe(e::ErrorException) = e.msg
+mensajeDe(e) = sprint(showerror, e)
+
+#Texto del archivo, o ErrorLectura si no existe o no se puede abrir
+function leerTexto(ruta::AbstractString)::Union{String,ErrorLectura}
+    if !isfile(ruta)
+        return ErrorLectura("No se encontró el archivo '$ruta'. " *
+                            "Ejecuta primero el programa de Haskell para generarlo.")
+    end
+    try
+        return read(ruta, String)
+    catch e
+        return ErrorLectura("No se pudo abrir '$ruta': " * mensajeDe(e))
+    end
+end
+
+#Lee y valida resultado.json
+#Resultado o un ErrorLectura con el motivo
+function leerResultado(ruta::AbstractString)::Union{Resultado,ErrorLectura}
+    try
+        texto = leerTexto(ruta)
+        texto isa ErrorLectura && return texto
+        if isempty(strip(texto))
+            return ErrorLectura("El archivo '$ruta' está dañado: está vacío.")
+        end
+        datos = try
+            parsearJSON(texto)
+        catch e
+            return ErrorLectura("El archivo '$ruta' está dañado: " * mensajeDe(e))
+        end
+        return validarEstructura(datos)
+    catch e
+        #Red de seguridad: ningún error inesperado debe tumbar el programa
+        return ErrorLectura("Error inesperado al leer '$ruta': " * mensajeDe(e))
+    end
+end
