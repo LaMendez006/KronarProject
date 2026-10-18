@@ -4,7 +4,7 @@ struct Resultado
     casilla_meta::Int
     regla_vacio_aplicada::Bool
     camino_optimo::Vector{Int}
-    puntaje_ruto::Int
+    puntaje_bruto::Int
     penalizacion_zafiro::Int
     bono_eter::Int
     puntaje_final::Int
@@ -194,3 +194,136 @@ function parsearJSON(texto::AbstractString)
     return valor
 end
 
+
+#Validacion de claves, tipos y rangos
+
+esEntero(x) = !(x isa Bool) && x isa Integer
+
+#Describe lo que se encontró, para el "se encontró Y" de los mensajes.
+
+function describirValor(v)::String
+    if v isa Bool
+        return "booleano ($v)"
+    elseif v isa Integer
+        return "entero ($v)"
+    elseif v isa AbstractFloat
+        return "decimal ($v)"
+    elseif v isa AbstractString
+        return "texto (\"$v\")"
+    elseif v isa AbstractVector
+        return "lista"
+    elseif v isa AbstractDict
+        return "objeto"
+    elseif v === nothing
+        return "nulo"
+    else
+        return string(typeof(v))
+    end
+end
+
+mensajeTipo(clave, esperado, encontrado) =
+    "Clave '$clave': se esperaba $esperado, se encontró $(describirValor(encontrado))"
+
+#Valor de la clave, o ErrorLectura si la clave no existe
+function extraerValor(datos, clave::String, esperado::String)
+    haskey(datos, clave) && return datos[clave]
+    return ErrorLectura("Clave '$clave': se esperaba $esperado, se encontró que la clave no existe")
+end
+
+function extraerEntero(datos, clave::String)
+    valor = extraerValor(datos, clave, "entero")
+    valor isa ErrorLectura && return valor
+    esEntero(valor) || return ErrorLectura(mensajeTipo(clave, "entero", valor))
+    return Int(valor)
+end
+
+function extraerBooleano(datos, clave::String)
+    valor = extraerValor(datos, clave, "booleano")
+    valor isa ErrorLectura && return valor
+    valor isa Bool || return ErrorLectura(mensajeTipo(clave, "booleano", valor))
+    return valor
+end
+
+function extraerListaEnteros(datos, clave::String)
+    valor = extraerValor(datos, clave, "lista de enteros")
+    valor isa ErrorLectura && return valor
+    valor isa AbstractVector || return ErrorLectura(mensajeTipo(clave, "lista de enteros", valor))
+    for (i, elemento) in enumerate(valor)
+        esEntero(elemento) || return ErrorLectura(
+            "Clave '$clave': se esperaba lista de enteros, se encontró " *
+            "$(describirValor(elemento)) en el elemento $i de la lista")
+    end
+    return Int[Int(x) for x in valor]
+end
+
+#Las 9 claves, con el nombre exacto y en el orden del enunciado
+const EXTRACTORES = [
+    "tablero"              => extraerListaEnteros,
+    "casilla_meta"         => extraerEntero,
+    "regla_vacio_aplicada" => extraerBooleano,
+    "camino_optimo"        => extraerListaEnteros,
+    "puntaje_bruto"        => extraerEntero,
+    "penalizacion_zafiro"  => extraerEntero,
+    "bono_eter"            => extraerEntero,
+    "puntaje_final"        => extraerEntero,
+    "caminos_evaluados"    => extraerEntero,
+]
+
+#Comprueba los rangos de valores ya tipados. nothing = todo bien
+function validarRangos(v::Dict{String,Any})::Union{Nothing,ErrorLectura}
+    n = length(v["tablero"])
+    n >= 1 || return ErrorLectura(
+        "Clave 'tablero': se esperaba al menos 1 casilla, se encontró una lista vacía")
+    ultimo = n - 1  
+
+    meta = v["casilla_meta"]
+    (0 <= meta <= ultimo) || return ErrorLectura(
+        "Clave 'casilla_meta': se esperaba un entero entre 0 y $ultimo, se encontró $meta")
+
+    camino = v["camino_optimo"]
+    isempty(camino) && return ErrorLectura(
+        "Clave 'camino_optimo': se esperaba al menos una posición, se encontró una lista vacía")
+    for (i, posicion) in enumerate(camino)
+        (0 <= posicion <= ultimo) || return ErrorLectura(
+            "Clave 'camino_optimo': se esperaban posiciones entre 0 y $ultimo, " *
+            "se encontró $posicion en el elemento $i de la lista")
+    end
+
+    zafiro = v["penalizacion_zafiro"]
+    zafiro >= 0 || return ErrorLectura(
+        "Clave 'penalizacion_zafiro': se esperaba un entero mayor o igual a 0, se encontró $zafiro")
+
+    eter = v["bono_eter"]
+    eter in (0, 10) || return ErrorLectura(
+        "Clave 'bono_eter': se esperaba 0 o 10, se encontró $eter")
+
+    return nothing
+end
+
+#Convierte lo que salió del parser en un Resultado, o explica qué falla
+function validarEstructura(datos)::Union{Resultado,ErrorLectura}
+    datos isa AbstractDict || return ErrorLectura(
+        "El archivo: se esperaba un objeto JSON con 9 claves, se encontró $(describirValor(datos))")
+
+    valores = Dict{String,Any}()
+    for (clave, extractor) in EXTRACTORES
+        valor = extractor(datos, clave)
+        valor isa ErrorLectura && return valor
+        valores[clave] = valor
+    end
+
+    problema = validarRangos(valores)
+    problema === nothing || return problema
+
+    return Resultado(
+        valores["tablero"],
+        valores["casilla_meta"],
+        valores["regla_vacio_aplicada"],
+        valores["camino_optimo"],
+        valores["puntaje_bruto"],
+        valores["penalizacion_zafiro"],
+        valores["bono_eter"],
+        valores["puntaje_final"],
+        valores["caminos_evaluados"],
+    )
+end
