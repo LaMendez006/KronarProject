@@ -84,6 +84,7 @@ pruebasEntrada =
   , ("Rechaza 1 casilla",                      esError (validarTablero [5]))
   , ("Rechaza 16 casillas",                    esError (validarTablero [1 .. 16]))
   , ("Rechaza tablero de solo ceros",          esError (validarTablero [0, 0, 0]))
+  , ("Rechaza tablero de 2 ceros",             esError (validarTablero [0, 0]))
   , ("Acepta 15 casillas",                     not (esError (validarTablero (replicate 15 1))))
   , ("Rechaza argumento no entero",            esError (leerTablero ["3", "x", "1"]))
   , ("Tablero A: tabla a mano = programa",     coincideConTabla tableroA tablaA)

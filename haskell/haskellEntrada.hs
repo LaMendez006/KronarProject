@@ -25,6 +25,7 @@ validarTablero :: Tablero -> Either String Tablero
 validarTablero t 
     | n  < minCasillas = Left ("Se recibio " ++ cantidadCasillas n ++ "; el minimo es " ++show minCasillas)
     | n > maxCasillas = Left ("Se recibieron " ++ cantidadCasillas n ++ ";  el maximo es " ++ show maxCasillas)
+    | all (== 0) t    = Left ("Las " ++ show n ++ " casillas valen 0; debe haber al menos una distinta de 0")
     | otherwise               = Right t
     where n = length t
 
