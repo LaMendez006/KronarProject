@@ -21,7 +21,7 @@ runghc haskell/Kronar.hs 3 -2 -1 4 2
 ```
 
 Para cambiar el tablero por defecto sin argumentos, edita `tableroPorDefecto` en el bloque marcado como
-`UNICO LUGAR EDITABLE DEL TABLERO` de `haskell/Kronar.hs`. Si se pasan argumentos, estos tienen prioridad.
+`UNICO LUGAR EDITABLE DEL TABLERO` de `haskell/haskellEntrada.hs`. Si se pasan argumentos, estos tienen prioridad.
 
 ### Errores esperados
 

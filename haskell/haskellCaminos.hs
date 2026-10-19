@@ -27,7 +27,7 @@ generarCaminos meta = caminosDesde meta 0
 -- 1) mayor puntaje final, 2) menos saltos, 3) menor lexicografico.
 compararCandidatos :: (Camino, Puntaje) -> (Camino, Puntaje) -> Ordering
 compararCandidatos (c1, p1) (c2, p2) =
-     compare (pFinal p2) (pFinal p1)      -- invertido: mayor puntaje primero
+     compare (puntajeFinal p2) (puntajeFinal p1)      -- invertido: mayor puntaje primero
   <> compare (length c1) (length c2)      -- menos saltos
   <> compare c1 c2                        -- orden de diccionario
 

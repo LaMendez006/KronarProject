@@ -30,12 +30,12 @@ end
 # Recalcula con el camino del JSON y compara los 4 campos.
 # No copia valores del JSON: solo los compara con lo recalculado.
 function verificar_puntaje(res::Resultado)::Bool
-    calc = calcular_puntaje(res.tablero, res.caminoOptimo)
+    calc = calcular_puntaje(res.tablero, res.camino_optimo)
     campos = [
-        ("puntaje_bruto",       res.puntajeBruto,       calc.bruto),
-        ("penalizacion_zafiro", res.penalizacionZafiro, calc.zafiro),
+        ("puntaje_bruto",       res.puntaje_bruto,       calc.bruto),
+        ("penalizacion_zafiro", res.penalizacion_zafiro, calc.zafiro),
         ("bono_eter",           res.bono_eter,          calc.eter),
-        ("puntaje_final",       res.puntajeFinal,       calc.final),
+        ("puntaje_final",       res.puntaje_final,       calc.final),
     ]
     ok = true
     for (nombre, json, julia) in campos
@@ -51,12 +51,12 @@ end
 # Porcentaje del bruto que aporta cada casilla visitada (numeradas desde 1).
 # Pueden salir negativos o mayores a 100.
 function porcentaje_por_casilla(res::Resultado)
-    bruto = puntaje_bruto(res.tablero, res.caminoOptimo)   # recalculado, no copiado
+    bruto = puntaje_bruto(res.tablero, res.camino_optimo)   # recalculado, no copiado
     if bruto == 0
         println("El puntaje bruto es 0: no se pueden calcular porcentajes.")
         return
     end
-    for pos in res.caminoOptimo
+    for pos in res.camino_optimo
         valor = res.tablero[pos + 1]
         pct = valor / bruto * 100
         println("Casilla $(pos + 1): valor $valor -> $(round(pct, digits = 1)) %")
