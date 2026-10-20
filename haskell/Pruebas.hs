@@ -24,21 +24,29 @@ import System.Exit (ExitCode (ExitFailure), exitWith)
 -- === PRUEBAS DE P1: tablero A y t1 con su tabla a mano ===
 #include "haskellPruebasEntrada.hs"
 
+-- === PRUEBAS DE P2: tablero B y t2 con su tabla a mano ===
+#include "haskellPruebasCaminos.hs"
+
+-- === PRUEBAS DE P3: tablero C y t3 con su tabla a mano ===
+#include "haskellPruebasReglas.hs"
+
 -- === PRUEBAS DE P4: JSON, flujo completo y cobertura de reglas ===
 #include "haskellPruebasSalida.hs"
 
--- Para sumar las pruebas de P2 (tablero B, t2) y P3 (tablero C, t3):
--- crear su archivo con una lista de (String, Bool), incluirlo aqui y
--- agregar la lista a todasLasPruebas.
-
 -- Todas las pruebas del proyecto.
 todasLasPruebas :: [(String, Bool)]
-todasLasPruebas = pruebasEntrada ++ pruebasSalida
+todasLasPruebas = pruebasEntrada ++ pruebasCaminos ++ pruebasReglas ++ pruebasSalida
 
 main :: IO ()
 main = do
   putStrLn "=== Pruebas de entrada (P1) ==="
   ejecutarPruebasEntrada
+  putStrLn ""
+  putStrLn "=== Pruebas de caminos y optimo (P2) ==="
+  ejecutarPruebasCaminos
+  putStrLn ""
+  putStrLn "=== Pruebas de reglas (P3) ==="
+  ejecutarPruebasReglas
   putStrLn ""
   putStrLn "=== Pruebas de salida e integracion (P4) ==="
   ejecutarPruebasSalida

@@ -19,6 +19,8 @@ KronarProject/
 │   ├── haskellReglas.hs            # P3: tipos compartidos, bruto, Zafiro, Eter
 │   ├── haskellSalida.hs            # P4: JSON a mano, resolver, resumen
 │   ├── haskellPruebasEntrada.hs    # P1: tablero A y t1 con tabla a mano
+│   ├── haskellPruebasCaminos.hs    # P2: tablero B y t2 con tabla a mano
+│   ├── haskellPruebasReglas.hs     # P3: tablero C y t3 con tabla a mano
 │   └── haskellPruebasSalida.hs     # P4: JSON, flujo completo y cobertura
 └── julia/
     ├── integracion.jl              # ENTREGA: incluye las secciones + main (P4)
@@ -90,12 +92,12 @@ Si ya existia un `resultado.json` de una ejecucion anterior, Haskell no lo toca 
 ## Pruebas
 
 ```bash
-runghc haskell/Pruebas.hs                 # 31 pruebas de Haskell; codigo 1 si alguna falla
+runghc haskell/Pruebas.hs                 # 60 pruebas de Haskell; codigo 1 si alguna falla
 julia julia/juliaProbarLectura.jl         # lectura del ejemplo y de los archivos danados
 julia julia/juliaProbarIntegracion.jl     # prueba cruzada Haskell vs Julia y archivos danados
 ```
 
-`Pruebas.hs` reune las tablas hechas a mano de P1 (tablero A y t1) y las pruebas de P4: el JSON exacto del ejemplo del enunciado, el orden de las 9 claves y el flujo completo de `resolver` en 7 tableros. En conjunto cubren las tres reglas y los dos tipos de empate:
+`Pruebas.hs` reune las tablas hechas a mano de los cuatro: P1 (tablero A y t1), P2 (tablero B y t2) y P3 (tablero C y t3), cada una con su justificacion en comentarios dentro de `haskellPruebasEntrada.hs`, `haskellPruebasCaminos.hs` y `haskellPruebasReglas.hs`, y las pruebas de P4: el JSON exacto del ejemplo del enunciado, el orden de las 9 claves y el flujo completo de `resolver` en 7 tableros. Las pruebas comparan, camino por camino, la tabla hecha a mano contra lo que calcula el programa. En conjunto cubren las tres reglas y los dos tipos de empate:
 
 | Tablero | Que demuestra | Caminos | Optimo (desde 1) | Final |
 |---|---|---|---|---|
